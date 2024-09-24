@@ -1,0 +1,20 @@
+.Todolist {
+    width: 100%;
+    margin: 0 auto;
+}
+
+.listitem {
+    width: 1200px;
+    display: flex; /* Sử dụng flexbox để căn giữa các mục */
+    flex-direction: column; /* Sắp xếp theo chiều dọc */
+    align-items: center; /* Căn giữa các mục theo chiều ngang */
+}
+
+.listitem1 {
+    border: 1px solid #000; /* Đường viền */
+    padding: 10px; /* Thêm khoảng đệm */
+    display: flex;
+    flex-direction: column; /* Sắp xếp theo chiều dọc */
+    align-items: center; /* Căn giữa các mục theo chiều ngang */
+    justify-content: center; /* Căn giữa các mục theo chiều dọc */
+}
