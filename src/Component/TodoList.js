@@ -1,76 +1,77 @@
-import React, { Component } from 'react';
+import React, { useState, useContext } from 'react';
 import TodoItem from './TodoItem';
 import TodoForm from './TodoForm';
+import { ThemeContext } from './ThemeContext';
 import './todo.css';
 
-class TodoList extends Component {
-  FILTERS = {
+const TodoList = () => {
+  const FILTERS = {
     ALL: 'all',
     COMPLETED: 'completed',
     ACTIVE: 'active',
   };
 
-  constructor(props) {
-    super(props);
-    this.state = {
-      todos: [],
-      filter: this.FILTERS.ALL, 
-    };
-  }
+  const [todos, setTodos] = useState([]);
+  const [filter, setFilter] = useState(FILTERS.ALL);
 
-  addTodo = (text) => {
+  const addTodo = (text) => {
     const newTodo = { id: Date.now(), text, completed: false };
-    this.setState({ todos: [...this.state.todos, newTodo] });
+    setTodos([...todos, newTodo]);
   };
 
-  toggleTodo = (id) => {
-    const todos = this.state.todos.map(todo =>
+  const toggleTodo = (id) => {
+    const updatedTodos = todos.map((todo) =>
       todo.id === id ? { ...todo, completed: !todo.completed } : todo
     );
-    this.setState({ todos });
+    setTodos(updatedTodos);
   };
 
-  deleteAll = () => {
-    this.setState({ todos: [] });
+  const deleteAll = () => {
+    setTodos([]);
   };
 
-  filterTodos = (filter) => {
-    this.setState({ filter });
+  const filterTodos = (filter) => {
+    setFilter(filter);
   };
 
-  render() {
-    const { todos, filter } = this.state;
-    const { ALL, COMPLETED, ACTIVE } = this.FILTERS;
+  const filteredTodos = todos.filter((todo) => {
+    if (filter === FILTERS.COMPLETED) return todo.completed;
+    if (filter === FILTERS.ACTIVE) return !todo.completed;
+    return true;
+  });
 
-    const filteredTodos = todos.filter((todo) => {
-      if (filter === COMPLETED) return todo.completed;
-      if (filter === ACTIVE) return !todo.completed;
-      return true; 
-    });
+  
+  const { theme, toggleTheme } = useContext(ThemeContext);
 
-    return (
-      <div>
-        <h1>To-Do List</h1>
-        <div className="listitem1">
-          <TodoForm addTodo={this.addTodo} />
-          <ul>
-            {filteredTodos.map((todo) => (
-              <TodoItem
-                key={todo.id}
-                todo={todo}
-                toggleTodo={this.toggleTodo}
-              />
-            ))}
-          </ul>
-          <div style={{ display: 'flex' }}><button onClick={this.deleteAll}>Delete All</button>
-            <button onClick={() => this.filterTodos(ALL)}>Show All</button>
-            <button onClick={() => this.filterTodos(COMPLETED)}>Show Completed</button>
-            <button onClick={() => this.filterTodos(ACTIVE)}>Show Active</button>
-          </div>
+  const themeStyle = {
+    backgroundColor: theme === 'light' ? 'white' : 'black',
+    color: theme === 'light' ? 'black' : 'white',
+    minHeight: '100vh',
+    padding: '20px',
+  };
+
+  return (
+    <div style={themeStyle}>
+      <h1>To-Do List</h1>
+      <button onClick={toggleTheme}>
+        Switch to {theme === 'light' ? 'Dark' : 'Light'} Mode
+      </button>
+      <div className="listitem1">
+        <TodoForm addTodo={addTodo} />
+        <ul>
+          {filteredTodos.map((todo) => (
+            <TodoItem key={todo.id} todo={todo} toggleTodo={toggleTodo} />
+          ))}
+        </ul>
+        <div style={{ display: 'flex' }}>
+          <button onClick={deleteAll}>Delete All</button>
+          <button onClick={() => filterTodos(FILTERS.ALL)}>Show All</button>
+          <button onClick={() => filterTodos(FILTERS.COMPLETED)}>Show Completed</button>
+          <button onClick={() => filterTodos(FILTERS.ACTIVE)}>Show Active</button>
         </div>
       </div>
-    );
-  }
-}
+    </div>
+  );
+};
 
 export default TodoList;

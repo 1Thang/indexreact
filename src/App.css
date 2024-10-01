@@ -84,3 +84,13 @@ button:last-child {
 button:last-child:hover {
   background-color: #e43b3b;
 }
+
+body.light {
+  background-color: white;
+  color: black;
+}
+
+body.dark {
+  background-color: black;
+  color: white;
+}
