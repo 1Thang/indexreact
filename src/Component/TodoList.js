@@ -26,6 +26,18 @@ const TodoList = () => {
     setTodos(updatedTodos);
   };
 
+  const updateTodoText = (id, newText) => {
+    const updatedTodos = todos.map((todo) =>
+      todo.id === id ? { ...todo, text: newText } : todo
+    );
+    setTodos(updatedTodos);
+  };
+
+  const deleteTodo = (id) => {
+    const updatedTodos = todos.filter((todo) => todo.id !== id); // Lọc bỏ mục có id cần xóa
+    setTodos(updatedTodos);
+  };
+
   const deleteAll = () => {
     setTodos([]);
   };
@@ -40,7 +52,6 @@ const TodoList = () => {
     return true;
   });
 
-  
   const { theme, toggleTheme } = useContext(ThemeContext);
 
   const themeStyle = {
@@ -60,13 +71,21 @@ const TodoList = () => {
         <TodoForm addTodo={addTodo} />
         <ul>
           {filteredTodos.map((todo) => (
-            <TodoItem key={todo.id} todo={todo} toggleTodo={toggleTodo} />
+            <TodoItem
+              key={todo.id}
+              todo={todo}
+              toggleTodo={toggleTodo}
+              updateTodoText={updateTodoText}
+              deleteTodo={deleteTodo} 
+            />
           ))}
         </ul>
         <div style={{ display: 'flex' }}>
           <button onClick={deleteAll}>Delete All</button>
           <button onClick={() => filterTodos(FILTERS.ALL)}>Show All</button>
-          <button onClick={() => filterTodos(FILTERS.COMPLETED)}>Show Completed</button>
+          <button onClick={() => filterTodos(FILTERS.COMPLETED)}>
+            Show Completed
+          </button>
           <button onClick={() => filterTodos(FILTERS.ACTIVE)}>Show Active</button>
         </div>
       </div>
