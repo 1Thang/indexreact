@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, createRef } from 'react';
 import TodoItem from './TodoItem';
 import TodoForm from './TodoForm';
 import { ThemeContext } from './ThemeContext';
@@ -14,6 +14,8 @@ class TodoList extends Component {
       filter: 'all',
       visibleTodos: 5, 
     };
+
+    this.listRef = createRef();
   }
 
   addTodo = (text) => {
@@ -67,18 +69,18 @@ class TodoList extends Component {
   };
 
   handleScroll = () => {
-    const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
-    if (scrollTop + clientHeight >= scrollHeight - 5) {
+    const list = this.listRef.current;
+    if (list.scrollTop + list.clientHeight >= list.scrollHeight) {
       this.loadMoreTodos();
     }
   };
 
   componentDidMount() {
-    window.addEventListener('scroll', this.handleScroll);
+    this.listRef.current.addEventListener('scroll', this.handleScroll);
   }
 
   componentWillUnmount() {
-    window.removeEventListener('scroll', this.handleScroll);
+    this.listRef.current.removeEventListener('scroll', this.handleScroll);
   }
 
   render() {
@@ -102,21 +104,28 @@ class TodoList extends Component {
         </button>
         <div className="listitem1">
           <TodoForm addTodo={this.addTodo} />
-          <ul>
-            {filteredTodos.slice(0, visibleTodos).map((todo) => (
-              <TodoItem
-                key={todo.id}
-                todo={todo}
-                toggleTodo={this.toggleTodo}
-                updateTodoText={this.updateTodoText}
-                deleteTodo={this.deleteTodo}
-              />
-            ))}
-          </ul>
-          {visibleTodos < filteredTodos.length && (
-            <div>Loading more items...</div>
-          )}
-          <div style={{ display: 'flex' }}>
+          
+          <div 
+            ref={this.listRef} 
+            style={{ maxHeight: '300px', overflowY: 'auto' }}
+          >
+            <ul>
+              {filteredTodos.slice(0, visibleTodos).map((todo) => (
+                <TodoItem
+                  key={todo.id}
+                  todo={todo}
+                  toggleTodo={this.toggleTodo}
+                  updateTodoText={this.updateTodoText}
+                  deleteTodo={this.deleteTodo}
+                />
+              ))}
+            </ul>
+            {visibleTodos < filteredTodos.length && (
+              <div>Loading more items...</div>
+            )}
+          </div>
+
+          <div style={{ display: 'flex', marginTop: '10px' }}>
             <button onClick={this.deleteAll}>Delete All</button>
             <button onClick={() => this.filterTodos('all')}>Show All</button>
             <button onClick={() => this.filterTodos('completed')}>
